@@ -5,18 +5,6 @@
 # BOOK_COPIES (Book_id, Branch_id, No-of_Copies)
 # BOOK_LENDING (Book_id, Branch_id, Card_No, Date_Out, Due_Date)
 # LIBRARY_BRANCH (Branch_id, Branch_Name, Address)
-# Write SQL queries to:
-# 1. Retrieve the details of all books in the library – id, title, name of publisher, authors,
-# number of copies in each branch, etc.
-# 2. Get the particular borrowers who have borrowed more than 3 books from Jan 2020 to
-# Jun 2022.
-# 3. Delete a book in BOOK table and Update the contents of other tables using DML
-# statements.
-# 4. Create the view for BOOK table based on year of publication and demonstrate its
-# working with a simple query.
-# 5. Create a view of all books and its number of copies which are currently available in the
-# Library.
-# 6. Demonstrate the usage of view creation
 
 create database library;
 use library;
