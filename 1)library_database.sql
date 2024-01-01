@@ -1,141 +1,176 @@
--- 1)
--- Consider the following schema for a Library Database:
--- BOOK (Book_id, Title, Publisher_Name, Pub_Year) 
--- BOOK_AUTHORS (Book_id, Author_Name) 
--- PUBLISHER (Name, Address, Phone)
--- BOOK_COPIES (Book_id, Branch_id, No-of_Copies)
--- BOOK_LENDING (Book_id, Branch_id, Card_No, Date_Out, Due_Date) 
--- LIBRARY_BRANCH (Branch_id, Branch_Name, Address)
-
-show databases;
+# Consider the following schema for a Library Database:
+# BOOK (Book_id, Title, Publisher_Name, Pub_Year)
+# BOOK_AUTHORS (Book_id, Author_Name)
+# PUBLISHER (Name, Address, Phone)
+# BOOK_COPIES (Book_id, Branch_id, No-of_Copies)
+# BOOK_LENDING (Book_id, Branch_id, Card_No, Date_Out, Due_Date)
+# LIBRARY_BRANCH (Branch_id, Branch_Name, Address)
+# Write SQL queries to:
+# 1. Retrieve the details of all books in the library – id, title, name of publisher, authors,
+# number of copies in each branch, etc.
+# 2. Get the particular borrowers who have borrowed more than 3 books from Jan 2020 to
+# Jun 2022.
+# 3. Delete a book in BOOK table and Update the contents of other tables using DML
+# statements.
+# 4. Create the view for BOOK table based on year of publication and demonstrate its
+# working with a simple query.
+# 5. Create a view of all books and its number of copies which are currently available in the
+# Library.
+# 6. Demonstrate the usage of view creation
 
 create database library;
+use library;
 
-CREATE TABLE PUBLISHER (
-NAME VARCHAR (18) PRIMARY KEY, 
-ADDRESS VARCHAR (10),
-PHONE VARCHAR (10));
+create table publisher(
+    name varchar(20) primary key,
+    address varchar(20),
+    phone varchar(10)
+);
 
-CREATE TABLE BOOK (
-BOOK_ID INTEGER PRIMARY KEY,
-TITLE VARCHAR (20),
-PUBLISHER_NAME VARCHAR (20) REFERENCES PUBLISHER(NAME)ON DELETE CASCADE,
-PUB_YEAR INT (4));
+create table book(
+    book_id int primary key,
+    title varchar(10),
+    publisher_name varchar(20),
+    pub_year year,
+    foreign key (publisher_name) references publisher(name) on delete cascade
+);
 
-CREATE TABLE BOOK_AUTHORS (
-BOOK_ID INTEGER REFERENCES BOOK(BOOK_ID) ON DELETE CASCADE, AUTHOR_NAME VARCHAR (20),
-PRIMARY KEY(BOOK_ID));
+create table book_authors(
+    book_id int primary key,
+    author_name varchar(10),
+    foreign key (book_id) references book(book_id) on delete cascade
+);
 
+create table library_branch(
+    branch_id int primary key,
+    branch_name varchar(20),
+    address varchar(20)
+);
 
-CREATE TABLE LIBRARY_BRANCH( 
-            BRANCH_ID INTEGER PRIMARY KEY,
-             BRANCH_NAME VARCHAR(18), 
-           ADDRESS VARCHAR(15));
-          
-CREATE TABLE BOOK_COPIES (
-BOOK_ID INTEGER REFERENCES BOOK(BOOK_ID) ON DELETE CASCADE, 
-BRANCH_ID INTEGER REFERENCES LIBRARY_BRANCH(BRANCH_ID) ON DELETE CASCADE,
-NO_OF_COPIES INTEGER, PRIMARY KEY (BOOK_ID, BRANCH_ID));
+create table book_copies(
+    book_id int,
+    branch_id int,
+    no_of_copies int,
+    foreign key (book_id) references book(book_id) on delete cascade ,
+    foreign key (branch_id) references library_branch(branch_id) on delete cascade
+);
 
-CREATE TABLE BOOK_LENDING (
-BOOK_ID INTEGER REFERENCES BOOK(BOOK_ID) ON DELETE CASCADE, 
-BRANCH_ID INTEGER REFERENCES LIBRARY_BRANCH(BRANCH_ID) ON DELETE CASCADE,
-CARD_NO INTEGER, 
-DATE_OUT DATE, 
-DUE_DATE DATE, PRIMARY KEY (BOOK_ID, BRANCH_ID, CARD_NO));
+create table book_lending(
+    book_id int,
+    branch_id int,
+    card_no int,
+    date_out date,
+    due_date date,
+    foreign key (book_id) references book(book_id) on delete cascade ,
+    foreign key (branch_id) references library_branch(branch_id) on delete cascade
+);
 
-INSERT INTO PUBLISHER VALUES('PEARSON','BANGALORE','9875462530'); 
-INSERT INTO PUBLISHER VALUES('MCGRAW','NEWDELHI','7845691234'); 
-INSERT INTO PUBLISHER VALUES('SAPNA','BANGALORE','7845963210');
+# Value Insertion
 
-INSERT INTO BOOK VALUES(1111,'SE','PEARSON',2005); 
-INSERT INTO BOOK VALUES(2222,'DBMS','MCGRAW',2004);
-INSERT INTO BOOK VALUES(3333,'ANOTOMY','PEARSON',2010); 
-INSERT INTO BOOK VALUES(4444,'ENCYCLOPEDIA','SAPNA',2010);
+insert into publisher
+    (name, address, phone)
+values
+    ('A', 'BENGALURU', '9879879879'),
+    ('B', 'BENGALURU', '8798798791'),
+    ('C', 'MYSURU',   '7897897892');
 
-INSERT INTO	BOOK_AUTHORS VALUES(1111,'SOMMERVILLE');
-INSERT INTO	BOOK_AUTHORS VALUES(2222,'NAVATHE');
-INSERT INTO	BOOK_AUTHORS  VALUES(3333,'HENRY GRAY');
-INSERT INTO	BOOK_AUTHORS VALUES(4444,'THOMAS');
+select * from publisher;
 
+insert into book
+    (book_id, title, publisher_name, pub_year)
+values
+    (1, 'DSA', 'A', 1998),
+    (2, 'ADA', 'A', 2000),
+    (3, 'DBMS', 'B', 2005),
+    (4, 'SE', 'C', 2005);
 
-INSERT	INTO	LIBRARY_BRANCH	VALUES(11,'CENTRAL TECHNICAL','MG ROAD');
-INSERT	INTO	LIBRARY_BRANCH	VALUES(22,'MEDICAL','BH ROAD');
-INSERT	INTO	LIBRARY_BRANCH	VALUES(33,'CHILDREN','SS PURAM');
-INSERT	INTO	LIBRARY_BRANCH	VALUES(44,'SECRETARIAT','SIRAGATE');
-INSERT	INTO	LIBRARY_BRANCH	VALUES(55,'GENERAL','JAYANAGAR');
+select * from book;
 
-INSERT INTO	BOOK_COPIES	VALUES(1111,11,5);
-INSERT	INTO	BOOK_COPIES	VALUES(3333,22,6);
-INSERT	INTO	BOOK_COPIES	VALUES(4444,33,10);
-INSERT	INTO	BOOK_COPIES	VALUES(2222,11,12);
-INSERT	INTO	BOOK_COPIES	VALUES(4444,55,3);
+insert into book_authors
+    (book_id, author_name)
+values
+    (1, 'AB'),
+    (2, 'CD'),
+    (3, 'EF'),
+    (4, 'GH');
 
-INSERT	INTO	BOOK_LENDING	VALUES(2222,11,1, '2017-01-10','2017-08-20');
-INSERT	INTO	BOOK_LENDING	VALUES(3333,22,2, '2017-07-09','2017-08-12');
-INSERT	INTO	BOOK_LENDING	VALUES(4444,55,1, '2017-04-11','2017-08-09');
-INSERT	INTO	BOOK_LENDING	VALUES(2222,11,5, '2017-08-09','2017-08-19');
-INSERT	INTO	BOOK_LENDING	VALUES(4444,33,1, '2017-06-08','2017-08-15');
-INSERT	INTO	BOOK_LENDING	VALUES(1111,11,1, '2017-05-12','2017-06-10');
-INSERT	INTO	BOOK_LENDING	VALUES(3333,22,1, '2017-07-10','2017-07-15');
+select * from book_authors;
 
--- queries
--- 1)Retrieve the details of all books in the library – id, title, name of publisher, authors, number 
--- of copies in each branch, etc.
-SELECT B.Book_id, B.Title, B.Publisher_Name, BA.Author_Name, BC.Branch_id, BC.No_of_Copies, L.Branch_Name
-FROM BOOK B
-NATURAL JOIN BOOK_AUTHORS BA
-NATURAL JOIN BOOK_COPIES BC
-NATURAL JOIN LIBRARY_BRANCH L;
+insert into library_branch
+    (branch_id, branch_name, address)
+values
+    (11, 'LIB1', 'MYSURU'),
+    (22, 'LIB2', 'MYSURU'),
+    (33, 'LIB3', 'BENGALURU'),
+    (44, 'LIB4', 'MANGALURU');
 
--- or
+select * from library_branch;
 
-SELECT LB. BRANCH_NAME, B. BOOK_ID, TITLE, PUBLISHER_NAME, AUTHOR_NAME, NO_OF_COPIES 
-FROM BOOK B, BOOK_AUTHORS BA, BOOK_COPIES BC, LIBRARY_BRANCH LB 
-WHERE B. BOOK_ID = BA. BOOK_ID AND BA. BOOK_ID = BC. BOOK_ID AND BC. BRANCH_ID = LB. BRANCH_ID 
-GROUP BY LB. BRANCH_NAME, B. BOOK_ID, TITLE, PUBLISHER_NAME, AUTHOR_NAME, NO_OF_COPIES;
+insert into book_copies
+    (book_id, branch_id, no_of_copies)
+values
+    (1, 11, 10),
+    (1, 22, 20),
+    (2, 22, 30),
+    (3, 33, 40),
+    (4, 44, 25),
+    (4, 33, 15);
 
--- 2)Get the particular borrowers who have borrowed more than 3 books from Jan 2017 to Jun 
--- 2017.
-SELECT CARD_NO
-FROM BOOK_LENDING
-WHERE DATE_OUT BETWEEN '2017-01-01' AND '2017-06-30'
-GROUP BY CARD_NO
-HAVING COUNT(*) > 3;
+select * from book_copies;
 
--- 3)Delete a book in BOOK table and Update the contents of other tables using DML 
--- statements.
-DELETE FROM BOOK WHERE BOOK_ID = '3333';
+insert into book_lending
+    (book_id, branch_id, card_no, date_out, due_date)
+values
+    (1, 11, 1010, '2020-01-02', '2020-02-01'),
+    (2, 22, 1010, '2020-03-01', '2020-04-01'),
+    (3, 33, 1010, '2021-02-02', '2021-03-02'),
+    (4, 44, 1010, '2022-01-02', '2022-02-01'),
+    (1, 22, 1012, '2020-01-02', '2020-02-01');
 
--- 4)Create the view for BOOK table based on year of publication and demonstrate its working 
--- with a simple query.
-CREATE VIEW V_PUBLICATION AS SELECT BOOK_ID, TITLE, PUBLISHER_NAME,PUB_YEAR 
-FROM BOOK 
-ORDER BY PUB_YEAR;
+select * from book_lending;
 
-select * from V_PUBLICATION;
+# Queries
 
--- 5)Create a view of all books and its number of copies which are currently available in the 
--- Library.
-CREATE VIEW AvailableBooks AS
-SELECT B.Book_id, B.Title, B.Publisher_Name, BC.Branch_id, BC.No_of_Copies
-FROM BOOK B
-NATURAL JOIN BOOK_COPIES BC;
+# 1. Retrieve the details of all books in the library – id, title, name of publisher, authors,
+# number of copies in each branch, etc.
+select b.book_id, b.title, b.publisher_name, ba.author_name, bc.branch_id, bc.no_of_copies
+from book b
+natural join book_authors ba
+natural join book_copies bc;
 
-select * from AvailableBooks;
+# 2. Get the particular borrowers who have borrowed more than 3 books from Jan 2020 to
+# Jun 2022.
+select card_no
+from book_lending
+where date_out between '2020-01-01' and '2022-07-31'
+group by card_no
+having count(*) > 3;
 
--- or
+# 3. Delete a book in BOOK table and Update the contents of other tables using DML
+# statements.
+delete from book where book_id = 1;
 
-CREATE VIEW BOOKS_AVAILABLE AS 
-SELECT B. BOOK_ID, B. TITLE,C.NO_OF_COPIES 
-FROM LIBRARY_BRANCH L, BOOK B, BOOK_COPIES C 
-WHERE B. BOOK_ID = C. BOOK_ID AND L. BRANCH_ID=C.BRANCH_ID;
+update book
+set publisher_name = 'B'
+where book_id = 2;
 
-select * from BOOKS_AVAILABLE;
+# 4. Create the view for BOOK table based on year of publication and demonstrate its
+# working with a simple query.
+create view publication_year as
+    select book_id, title, publisher_name, pub_year
+    from book
+    order by pub_year;
 
+select * from publication_year;
 
+select * from publication_year where pub_year = '2000';
 
+# 5. Create a view of all books and its number of copies which are currently available in the
+# Library.
+create view available_books as
+    select b.book_id, b.title, l.branch_id, bc.no_of_copies
+    from book b
+    natural join book_copies bc
+    natural join library_branch l;
 
-
-
-
+select * from available_books;
