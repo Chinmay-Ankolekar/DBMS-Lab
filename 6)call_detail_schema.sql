@@ -11,7 +11,7 @@
 create database if not exists prog6;
 use prog6;
 
-create table ppi_call_detail (
+create table call_detail (
     phone_number decimal(10) not null,
     call_start timestamp,
     call_duration integer,
@@ -23,11 +23,11 @@ partition by range(unix_timestamp(call_start)) (
     partition p1 values less than (unix_timestamp('2023-01-23 00:00:00'))
 );
 
-desc ppi_call_detail;
+desc call_detail;
 
-create index idx on ppi_call_detail(phone_number, call_start);
+create index idx on call_detail(phone_number, call_start);
 
-show index from ppi_call_detail;
+show index from call_detail;
 
 insert into ppi_call_detail values
 (122434231, '2023-01-20 00:00:00', 50, 'FDF'),
@@ -37,9 +37,9 @@ insert into ppi_call_detail values
 (123232323, '2022-01-11 10:00:00', 30, 'eed');
 
 
-select * from ppi_call_detail;
+select * from call_detail;
 
-select * from ppi_call_detail partition (p0);
+select * from call_detail partition (p0);
 
-select * from ppi_call_detail partition (p1);
+select * from call_detail partition (p1);
 
