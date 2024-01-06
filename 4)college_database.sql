@@ -34,8 +34,6 @@ create table SUBJECT (
    CREDITS INT
 );
 
-drop table SUBJECT;
-
 create table IAMARKS (
    USN VARCHAR(20),
    SUBCODE VARCHAR(10),
