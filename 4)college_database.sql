@@ -1,5 +1,3 @@
-show databases;
-
 create database college;
 
 use college;
