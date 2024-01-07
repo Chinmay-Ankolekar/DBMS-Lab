@@ -29,7 +29,7 @@ create index idx on call_detail(phone_number, call_start);
 
 show index from call_detail;
 
-insert into ppi_call_detail values
+insert into call_detail values
 (122434231, '2023-01-20 00:00:00', 50, 'FDF'),
 (122343243, '2023-01-22 10:00:00', 40, 'FFR'),
 (122434230, '2023-01-11 00:00:00', 50, 'FDF'),
