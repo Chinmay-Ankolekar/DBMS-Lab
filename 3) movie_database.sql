@@ -118,19 +118,10 @@ where mov_year not between 2000 and 2015;
 
 -- 4)Find the title of movies and number of stars for each movie that has at least one rating and 
 -- find the highest number of stars that movie received. Sort the result by movie title
-SELECT MOV_TITLE,MAX(REV_STARS)
-FROM MOVIES
-INNER JOIN RATING USING (MOV_ID)
-GROUP BY MOV_TITLE
-HAVING MAX(REV_STARS)>0
-ORDER BY MOV_TITLE;
-
--- or
-
-select mov_title , max(rev_stars) 
+select mov_title , max(rev_stars)
 from movies natural join rating
 group by mov_title
-order by max(rev_stars) desc;
+order by mov_title;
 
 -- #5) Update rating of all movies directed by ‘Steven Spielberg’ to 5.
 update rating
